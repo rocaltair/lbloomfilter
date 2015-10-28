@@ -1,26 +1,37 @@
 l = require "lbf"
 
-function printf(fmt, ...)
+local function printf(fmt, ...)
 	print(string.format(fmt, ...))
 end
 
-function a(a)
-	return a * 10240 + a / 1024 + 103
+local function hashfunc(i)
+	return function(h)
+		local v = math.pow(2, i)
+		return h * v + math.floor(h / v)
+	end
 end
 
-m = l.new(1e7, 0.01)
-printf("slots=%d,fn=%d", l.slots_fn(1e5, 0.01))
+local cap = 1e7
+local fakerate = 0.01
+local bf, hfuncsize = l.new(cap, fakerate)
 
-m:set_hfuncs({a, a, a, a, a, a})
+local funclist = {}
+for i=1, hfuncsize do
+	table.insert(funclist, hashfunc(i))
+end
+
+
+printf("slots=%d,fn=%d", l.slots_fn(cap, fakerate))
+bf:set_hfuncs(funclist)
 
 local v = {324,234,432,4321,342423,432,1}
 
 table.foreach(v, function(i, v)
-	m:set(v)
+	bf:set(v)
 	printf("set %d", v)
 end)
 
-printf("size=%d,cap=%d", m:size(), m:cap())
+printf("size=%d,cap=%d", bf:size(), bf:cap())
 
 local check = {234,23,4,324,3,21,21}
 table.foreach(v, function(ii, vv)
@@ -28,6 +39,15 @@ table.foreach(v, function(ii, vv)
 end)
 
 table.foreach(check, function(i, v)
-	printf("is %d set ? %s", v, tostring(m:is_set(v)))
+	printf("is %d set ? %s", v, tostring(bf:is_set(v)))
 end)
+
+bf:clear()
+
+table.foreach(check, function(i, v)
+	printf("after clear, is %d set ? %s", v, tostring(bf:is_set(v)))
+end)
+printf("after clear, size=%d,cap=%d", bf:size(), bf:cap())
+printf("memory=%dbytes", collectgarbage("count"))
+
 
