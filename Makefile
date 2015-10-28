@@ -1,5 +1,5 @@
-OBJS = lbf.o
 LIB = lbf.so
+OBJS = lbf.o
 
 LLIBS = -llua -lm
 CFLAGS = -c -O3 -Wall

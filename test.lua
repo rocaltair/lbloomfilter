@@ -8,7 +8,7 @@ function a(a)
 	return a * 10240 + a / 1024 + 103
 end
 
-m = l.new(1e5, 0.01)
+m = l.new(1e7, 0.01)
 printf("slots=%d,fn=%d", l.slots_fn(1e5, 0.01))
 
 m:set_hfuncs({a, a, a, a, a, a})
@@ -30,5 +30,4 @@ end)
 table.foreach(check, function(i, v)
 	printf("is %d set ? %s", v, tostring(m:is_set(v)))
 end)
-
 

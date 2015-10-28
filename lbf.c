@@ -220,6 +220,17 @@ static int lua__isset(lua_State *L)
 }
 
 
+static int lua__get_slots_fn(lua_State *L)
+{
+	int cap = luaL_checkinteger(L, 1);
+	lua_Number fakerate = luaL_optnumber(L, 2, DEFAULT_FAKE_RATE);
+	size_t slots = cap * (log(fakerate)/log(0.6185)); 
+	int fn_size = -log(fakerate) / log(2);
+	lua_pushinteger(L, slots);
+	lua_pushinteger(L, fn_size);
+	return 2;
+}
+
 static int opencls__bf(lua_State *L)
 {
 	luaL_Reg lmethods[] = {
@@ -240,16 +251,6 @@ static int opencls__bf(lua_State *L)
 	return 1;
 }
 
-static int lua__get_slots_fn(lua_State *L)
-{
-	int cap = luaL_checkinteger(L, 1);
-	lua_Number fakerate = luaL_optnumber(L, 2, DEFAULT_FAKE_RATE);
-	size_t slots = cap * (log(fakerate)/log(0.6185)); 
-	int fn_size = -log(fakerate) / log(2);
-	lua_pushinteger(L, slots);
-	lua_pushinteger(L, fn_size);
-	return 2;
-}
 
 int luaopen_lbf(lua_State* L)
 {
